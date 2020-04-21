@@ -257,9 +257,8 @@ main.o : $(SRCDIR)/main.cpp
 
 ```
 ## 二、CMake
-* 当项目程序简单的时候可以通过手写Makefile来编译项目。但当项目复杂时，通常使用CMake或autotools来自动生成``Makefile``。
-
-### 2.1、单源文件项目helloworld
+* 当项目程序简单的时候可以通过手写Makefile来编译项目。但当项目复杂时，手动编写Makefile将不再现实。CMake的存在就是解决这种情况的。CMake并不直接建构出最终的软件，而是产生标准的建构档。
+### 2.1. 单源文件项目helloworld
 ```Shell
 $ tree
 .
@@ -275,7 +274,7 @@ cmake_minimum_required(VERSION "3.7.1") # CMake版本号要求
 
 project("helloworld") # 项目
 
-add_executable("${PROJECT_NAME}" "hello.cpp") # 指定生成目标
+add_executable(${PROJECT_NAME} hello.cpp) # 指定生成目标
 ```
 2. 终端输入
 ```Shell
@@ -332,7 +331,83 @@ $ tree
 
 8 directories, 35 files
 ```
-可以很明显的看到，这个版本的``CMakeLists.txt``存在许多问题：
+### 2.2. 多源文件下自动查找源文件
+* 当源文件有多个时，可以通过在``add_executable``添加多个源文件：
+```CMake
+add_executable(${PROJECT_NAME} hello.cpp other.cpp ) # 添加多个源文件
+```CMake
+# aux_source_directory(<dir> <variable>)
+aux_source_directory(. DIR_SRCS)
+add_executable(${PROJECT_NAME} ${DIR_SRCS})
+```
+* 另一种更为高效的方法是使用``aux_source_directory``命令，该命令会查找指定目录下的所有源文件，然后将结果存进指定变量名。
+
+可以很明显的看到，上面的``CMakeLists.txt``存在许多问题：
 * 产生了很多的垃圾文件
 * 需要手动指定编译文件
 * 在有子目录的情况下无法适用
+
+### 2.3. 多个目录、多个源文件
+当存在多个目录和多个源文件时，如下计算几何体体积程序：
+```Shell
+$ tree
+.
+├── CMakeLists.txt
+├── include
+│   ├── cube.h
+│   ├── geometry.h
+│   └── sphere.h
+├── main.cpp
+└── src
+    ├── CMakeLists.txt
+    ├── cube.cpp
+    └── sphere.cpp
+
+2 directories, 8 files
+```
+1) 创建静态链接库
+
+    先将 src目录里的文件编译成静态库再由 根目录main调用。
+* 子目录src下的``CMakeLists.txt``:
+```CMake
+# 查找src目录下的所有源文件
+# 并将名称保存到 DIR_LIB_SRCS 变量
+aux_source_directory(. DIR_LIB_SRCS)
+# 指定生成 geoUtils 链接库
+add_library (geoMath ${DIR_LIB_SRCS})#命令 add_library 将 src 目录中的源文件编译为静态链接库。
+```
+2) 根目录main调用链接库生成程序
+* 根目录下的``CMakeLists.txt``:
+```CMake
+cmake_minimum_required(VERSION "3.7.1")
+project(geoCpt)
+
+set(CMAKE_C_STANDARD 99)
+
+# 查找当前目录下的所有源文件
+# 并将名称保存到 DIR_SRCS 变量
+aux_source_directory(. DIR_SRCS)
+# 指定生成目标
+add_executable(${PROJECT_NAME} ${DIR_SRCS})
+
+# 添加 math 子目录
+add_subdirectory(src)
+
+# 添加链接库
+target_link_libraries(${PROJECT_NAME} geoMath)
+```
+终端执行``cmke .``后再执行``make``
+```vim
+$ make
+Scanning dependencies of target geoMath
+[ 20%] Building CXX object src/CMakeFiles/geoMath.dir/cube.cpp.o
+[ 40%] Building CXX object src/CMakeFiles/geoMath.dir/sphere.cpp.o
+[ 60%] Linking CXX static library libgeoMath.a
+[ 60%] Built target geoMath
+Scanning dependencies of target geoCpt
+[ 80%] Building CXX object CMakeFiles/geoCpt.dir/main.cpp.o
+[100%] Linking CXX executable geoCpt
+[100%] Built target geoCpt
+```
+
+

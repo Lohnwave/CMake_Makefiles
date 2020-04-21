@@ -1,6 +1,6 @@
 #include <iostream>
-#include "../include/cube.h"
-#include "../include/sphere.h"
+#include "include/cube.h"
+#include "include/sphere.h"
 
 using namespace std;
 
