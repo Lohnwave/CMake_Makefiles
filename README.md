@@ -118,7 +118,7 @@ clean:
 cleanall:
     rm $(OBJ) $(TAR)
 ```
-### 1.3 隐含规则
+### 1.3. 隐含规则
 * 通过通配符来格式化依赖及指令
 ```Makefile
 # %.c/ %.o/ *.c/ *.o
@@ -163,7 +163,7 @@ clean:
 cleanall:
     rm $(OBJ) $(TAR)
 ```
-### 1.5 多级目录下Makefile
+### 1.5. 多级目录下Makefile
 * 工程文件夹下不同目录引用问题
 1) ``.cpp``依赖的``.h``在同文件夹: ``#include "*.h"``
 2) .h在上级文件夹: ``#include "../*.h"``
@@ -257,7 +257,7 @@ main.o : $(SRCDIR)/main.cpp
 
 ```
 ## 二、CMake
-* 当项目程序简单的时候可以通过手写Makefile来编译项目。但当项目复杂时，手动编写Makefile将不再现实。CMake的存在就是解决这种情况的。CMake并不直接建构出最终的软件，而是产生标准的建构档。
+* 当项目程序简单的时候可以通过手写Makefile来编译项目。但当项目复杂时，手动编写Makefile将不再现实。CMake的存在就是解决这种情况的。CMake并不直接建构出最终的软件，而是产生标准的建构文档。
 ### 2.1. 单源文件项目helloworld
 ```Shell
 $ tree
@@ -409,5 +409,5 @@ Scanning dependencies of target geoCpt
 [100%] Linking CXX executable geoCpt
 [100%] Built target geoCpt
 ```
-
+### 2.4. CMake项目管理
 
