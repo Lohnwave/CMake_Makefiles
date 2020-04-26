@@ -331,6 +331,9 @@ $ tree
 
 8 directories, 35 files
 ```
+可以很明显的看到，上面的``CMakeLists.txt``存在问题：
+* 需要手动指定编译文件
+
 ### 2.2. 多源文件下自动查找源文件
 * 当源文件有多个时，可以通过在``add_executable``添加多个源文件：
 ```CMake
@@ -342,13 +345,12 @@ add_executable(${PROJECT_NAME} ${DIR_SRCS})
 ```
 * 另一种更为高效的方法是使用``aux_source_directory``命令，该命令会查找指定目录下的所有源文件，然后将结果存进指定变量名。
 
-可以很明显的看到，上面的``CMakeLists.txt``存在许多问题：
-* 产生了很多的垃圾文件
-* 需要手动指定编译文件
+可以很明显的看到，上面的``CMakeLists.txt``存在问题：
 * 在有子目录的情况下无法适用
 
 ### 2.3. 多个目录、多个源文件
-当存在多个目录和多个源文件时，如下计算几何体体积程序：
+当main源文件依赖存在多个且分布在子目录下时，
+如下计算几何体体积程序：
 ```Shell
 $ tree
 .
@@ -365,6 +367,7 @@ $ tree
 
 2 directories, 8 files
 ```
+可以通过在子目录下建立静态链接库，再来让main调用。
 1) 创建静态链接库
 
     先将 src目录里的文件编译成静态库再由 根目录main调用。
@@ -409,5 +412,6 @@ Scanning dependencies of target geoCpt
 [100%] Linking CXX executable geoCpt
 [100%] Built target geoCpt
 ```
-### 2.4. CMake项目管理
+### 2.4. CMake外部构建
+上面的介绍已经让我们初步学习到了如何使用CMake构建项目。然而，可以发现，上面的方法会产生众多的垃圾文件。
 
