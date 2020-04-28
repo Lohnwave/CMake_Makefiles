@@ -259,6 +259,7 @@ main.o : $(SRCDIR)/main.cpp
 ## 二、CMake
 * 当项目程序简单的时候可以通过手写Makefile来编译项目。但当项目复杂时，手动编写Makefile将不再现实。CMake的存在就是解决这种情况的。CMake并不直接建构出最终的软件，而是产生标准的建构文档。
 ### 2.1. 单源文件项目helloworld
+以大家最熟悉的``helloworld``为例，其项目``tree``如下：
 ```Shell
 $ tree
 .
@@ -268,6 +269,8 @@ $ tree
 0 directories, 2 files
 ```
 1. ``CMakeLists.txt``是CMake的必备
+
+根目录下的``CMakeLists.txt``内容如下：
 ```CMake
 # Version 1
 cmake_minimum_required(VERSION "3.7.1") # CMake版本号要求
@@ -376,7 +379,7 @@ $ tree
 # 查找src目录下的所有源文件
 # 并将名称保存到 DIR_LIB_SRCS 变量
 aux_source_directory(. DIR_LIB_SRCS)
-# 指定生成 geoUtils 链接库
+# 指定生成 geoMath 链接库
 add_library (geoMath ${DIR_LIB_SRCS})#命令 add_library 将 src 目录中的源文件编译为静态链接库。
 ```
 2) 根目录main调用链接库生成程序
@@ -396,10 +399,10 @@ add_executable(${PROJECT_NAME} ${DIR_SRCS})
 # 添加 math 子目录
 add_subdirectory(src)
 
-# 添加链接库
+# 添加链接库geoMath
 target_link_libraries(${PROJECT_NAME} geoMath)
 ```
-终端执行``cmke .``后再执行``make``
+终端执行``cmake .``后再执行``make``
 ```vim
 $ make
 Scanning dependencies of target geoMath
@@ -413,7 +416,7 @@ Scanning dependencies of target geoCpt
 [100%] Built target geoCpt
 ```
 ### 2.4. CMake外部构建
-上面的介绍已经让我们初步学习到了如何使用CMake构建项目。然而，可以发现，上面的方法会在项目根目录产生众多的中间文件。这是一件令人头疼的事。CMake外部构建可以解决这个问题，并让项目更像一个工程。
+上面的介绍已经让我们初步学习到了如何使用CMake构建项目。然而，可以发现，上面的方法会在项目根目录产生众多的中间文件。这是一件令人头疼的事。CMake外部构建可以解决这个问题，并让项目更像一个真正的工程。
 * 外部构建：通过编写``build.sh``脚本，在项目根目录创建``build``，并在``build``文件夹执行``cmake``指令，来自动将中间文件以及程序生成的执行文件放入到``build``。
 
 1. ``bulid.sh``脚本编写如下：
